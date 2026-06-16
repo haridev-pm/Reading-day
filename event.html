@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events - Model Polytechnic College Vadakara</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, sans-serif;
+    }
+
+    body{
+        background:linear-gradient(135deg,#003366,#00509d,#0077cc);
+        min-height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        padding:20px;
+    }
+
+    .container{
+        width:100%;
+        max-width:900px;
+        background:#fff;
+        border-radius:20px;
+        padding:40px;
+        box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .header{
+        text-align:center;
+        margin-bottom:40px;
+    }
+
+    .header h1{
+        color:#003366;
+        font-size:2.5rem;
+        margin-bottom:10px;
+    }
+
+    .header p{
+        color:#666;
+        font-size:1.1rem;
+    }
+
+    .event-card{
+        background:linear-gradient(135deg,#f8f9fa,#eef5ff);
+        border-left:6px solid #00509d;
+        border-radius:15px;
+        padding:25px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:20px;
+        transition:0.3s;
+    }
+
+    .event-card:hover{
+        transform:translateY(-5px);
+        box-shadow:0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .event-details h2{
+        color:#003366;
+        margin-bottom:10px;
+    }
+
+    .event-info{
+        color:#555;
+        margin:5px 0;
+        font-size:1rem;
+    }
+
+    .register-btn{
+        background:#00509d;
+        color:#fff;
+        text-decoration:none;
+        padding:14px 30px;
+        border-radius:50px;
+        font-weight:bold;
+        transition:0.3s;
+        display:inline-block;
+    }
+
+    .register-btn:hover{
+        background:#003366;
+        transform:scale(1.05);
+    }
+
+    @media(max-width:600px){
+        .header h1{
+            font-size:2rem;
+        }
+
+        .event-card{
+            flex-direction:column;
+            text-align:center;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>MODEL POLYTECHNIC COLLEGE VADAKARA</h1>
+        <p>Upcoming Events & Activities</p>
+    </div>
+
+    <div class="event-card">
+        <div class="event-details">
+            <h2>📚 Reading Competition</h2>
+            <p class="event-info"><strong>Date:</strong> 19 June</p>
+            <p class="event-info"><strong>Time:</strong> 10:00 AM</p>
+            <p class="event-info">
+                Participate in our Reading Competition and showcase your reading skills and knowledge.
+            </p>
+        </div>
+
+        <a href="mptc_reading_competition.html" class="register-btn">Register</a>
+    </div>
+
+</div>
+
+</body>
+</html>

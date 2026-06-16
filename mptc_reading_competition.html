@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reading Competition — MPTC Vadakara</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:       #1a1209;
+    --parchment: #f5ede0;
+    --cream:     #fdf6ec;
+    --gold:      #b8860b;
+    --gold-lt:   #d4a017;
+    --rust:      #7c3d12;
+    --sage:      #4a6741;
+    --shadow:    rgba(26,18,9,0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--ink);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Bookshelf background ── */
+  .page-wrap {
+    min-height: 100vh;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 38px,
+        rgba(255,255,255,0.02) 38px, rgba(255,255,255,0.02) 40px
+      ),
+      linear-gradient(160deg, #0d0a05 0%, #1f1509 40%, #0d0a05 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    position: relative;
+  }
+
+  /* Decorative floating book spines on sides */
+  .page-wrap::before {
+    content: '';
+    position: fixed;
+    left: 0; top: 0;
+    width: 80px; height: 100%;
+    background: repeating-linear-gradient(
+      180deg,
+      #2a1a08 0px, #2a1a08 60px,
+      #1a0f05 60px, #1a0f05 62px,
+      #3a2010 62px, #3a2010 110px,
+      #1a0f05 110px, #1a0f05 112px,
+      #251500 112px, #251500 155px,
+      #1a0f05 155px, #1a0f05 157px
+    );
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .page-wrap::after {
+    content: '';
+    position: fixed;
+    right: 0; top: 0;
+    width: 80px; height: 100%;
+    background: repeating-linear-gradient(
+      180deg,
+      #251500 0px, #251500 80px,
+      #1a0f05 80px, #1a0f05 82px,
+      #2a1a08 82px, #2a1a08 135px,
+      #1a0f05 135px, #1a0f05 137px,
+      #3a2010 137px, #3a2010 175px,
+      #1a0f05 175px, #1a0f05 177px
+    );
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* ── Card ── */
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--cream);
+    border-radius: 4px;
+    box-shadow:
+      0 2px 0 var(--gold),
+      0 8px 40px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(184,134,11,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Top ribbon — simulates book page top with gilt edge */
+  .card-ribbon {
+    height: 6px;
+    background: linear-gradient(90deg, var(--rust), var(--gold-lt), var(--rust), var(--gold-lt), var(--rust));
+  }
+
+  /* Header */
+  .card-header {
+    background: linear-gradient(160deg, #1f1004 0%, #2e1a06 60%, #1a0e04 100%);
+    padding: 40px 44px 36px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  /* Faint open-book watermark */
+  .card-header::before {
+    content: '📖';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.04;
+    top: -30px; right: -30px;
+    pointer-events: none;
+    filter: grayscale(1);
+  }
+
+  /* Quill ornament line */
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .ornament-line {
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .ornament-line.right { background: linear-gradient(90deg, var(--gold), transparent); }
+  .ornament-icon {
+    font-size: 20px;
+    filter: sepia(1) saturate(2);
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-lt);
+    background: rgba(184,134,11,0.12);
+    border: 1px solid rgba(184,134,11,0.3);
+    border-radius: 2px;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+  }
+
+  .institution {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(212,160,23,0.7);
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(28px, 5vw, 36px);
+    font-weight: 900;
+    color: var(--parchment);
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .title em {
+    font-style: italic;
+    color: var(--gold-lt);
+  }
+
+  .subtitle {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(245,237,224,0.55);
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Form body ── */
+  .card-body {
+    padding: 40px 44px 44px;
+    background:
+      radial-gradient(ellipse at top right, rgba(184,134,11,0.04) 0%, transparent 60%),
+      var(--cream);
+  }
+
+  .section-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(124,61,18,0.25), transparent);
+  }
+
+  .field-group { margin-bottom: 22px; }
+
+  label {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--rust);
+    margin-bottom: 7px;
+    text-transform: uppercase;
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  select {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: #fffaf4;
+    border: 1.5px solid rgba(124,61,18,0.2);
+    border-radius: 3px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  select:focus {
+    border-color: var(--gold);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(184,134,11,0.1), 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  input::placeholder { color: rgba(26,18,9,0.28); font-style: italic; }
+
+  /* Custom select arrow */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    pointer-events: none;
+    font-size: 13px;
+  }
+
+  /* Two-column row */
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Gender radio */
+  .gender-group {
+    display: flex;
+    gap: 12px;
+  }
+  .gender-opt {
+    flex: 1;
+    position: relative;
+  }
+  .gender-opt input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+  .gender-opt label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    background: #fffaf4;
+    border: 1.5px solid rgba(124,61,18,0.2);
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(26,18,9,0.5);
+    text-transform: uppercase;
+    transition: all 0.2s;
+    user-select: none;
+    margin-bottom: 0;
+  }
+  .gender-opt input[type="radio"]:checked + label {
+    background: linear-gradient(135deg, var(--rust), #a0540e);
+    border-color: var(--rust);
+    color: var(--parchment);
+    box-shadow: 0 2px 8px rgba(124,61,18,0.3);
+  }
+  .gender-opt label:hover { border-color: var(--gold); }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(124,61,18,0.12);
+    margin: 28px 0;
+  }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    padding: 15px 24px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--gold-lt) 0%, var(--gold) 50%, #9a7009 100%);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(184,134,11,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 60%);
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(184,134,11,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-icon { font-size: 18px; }
+
+  /* Footer note */
+  .card-footer {
+    text-align: center;
+    padding: 0 44px 36px;
+    background: var(--cream);
+  }
+  .footer-note {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 11.5px;
+    color: rgba(26,18,9,0.35);
+    line-height: 1.6;
+  }
+
+  /* Success overlay */
+  .success-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #1f1004, #2e1a06);
+    z-index: 10;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+  }
+  .success-overlay.visible { display: flex; }
+  .success-icon { font-size: 60px; margin-bottom: 24px; animation: pop 0.5s 0.1s both; }
+  .success-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--parchment);
+    margin-bottom: 12px;
+  }
+  .success-msg {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: rgba(245,237,224,0.6);
+    line-height: 1.7;
+    max-width: 340px;
+  }
+  .success-name {
+    color: var(--gold-lt);
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes pop { from { transform: scale(0.4); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    .card-header, .card-body, .card-footer { padding-left: 24px; padding-right: 24px; }
+    .row-2 { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="card" id="mainCard">
+
+    <div class="card-ribbon"></div>
+
+    <div class="card-header">
+      <div class="institution">Model Polytechnic College · Vadakara</div>
+      <div class="ornament">
+        <span class="ornament-line"></span>
+        <span class="ornament-icon">✦</span>
+        <span class="ornament-line right"></span>
+      </div>
+      <div class="badge">Open Registration</div>
+      <h1 class="title">Reading<br><em>Competition</em></h1>
+      <p class="subtitle">"A reader lives a thousand lives before he dies."</p>
+    </div>
+
+    <div class="card-body">
+      <div class="section-label">Participant Details</div>
+
+      <form id="regForm" novalidate>
+
+        <div class="field-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" autocomplete="name" required>
+        </div>
+
+        <div class="row-2">
+          <div class="field-group">
+            <label for="dept">Department</label>
+            <div class="select-wrap">
+              <select id="dept" name="department" required>
+                <option value="" disabled selected>Select dept.</option>
+                <option value="BME">BME</option>
+                <option value="CE">CE</option>
+                <option value="EEE">EEE</option>
+                <option value="EE">EE</option>
+                <option value="CHE">CHE</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="sem">Semester</label>
+            <div class="select-wrap">
+              <select id="sem" name="semester" required>
+                <option value="" disabled selected>Select sem.</option>
+                <option value="S3">S3</option>
+                <option value="S5">S5</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="mobile">WhatsApp Number</label>
+          <input type="tel" id="mobile" name="mobile" placeholder="+91 XXXXX XXXXX" maxlength="15" required pattern="[0-9+\s\-]{7,15}">
+        </div>
+
+        <div class="field-group">
+          <label>Gender</label>
+          <div class="gender-group">
+            <div class="gender-opt">
+              <input type="radio" id="male" name="gender" value="Male" required>
+              <label for="male">♂ Male</label>
+            </div>
+            <div class="gender-opt">
+              <input type="radio" id="female" name="gender" value="Female">
+              <label for="female">♀ Female</label>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <button type="submit" class="btn-submit">
+          <span class="btn-icon">📜</span>
+          Register for the Competition
+        </button>
+
+      </form>
+    </div>
+
+    <div class="card-footer">
+      <p class="footer-note">
+        Organised by MPTC Vadakara &nbsp;·&nbsp; For queries, contact your department coordinator.<br>
+        Registrations are open to S3 &amp; S5 students only.
+      </p>
+    </div>
+
+    <!-- Success overlay -->
+    <div class="success-overlay" id="successOverlay">
+      <div class="success-icon">📚</div>
+      <h2 class="success-title">You're Registered!</h2>
+      <p class="success-msg">
+        Welcome, <span class="success-name" id="successName"></span>.<br>
+        Your entry for the Reading Competition has been received. We look forward to seeing you on the day. Keep reading!
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('regForm');
+  const overlay = document.getElementById('successOverlay');
+  const successName = document.getElementById('successName');
+  
+  // നിങ്ങളുടെ Google Apps Script-ന്റെ URL ഇവിടെയുണ്ട്
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwKDNAJ1KuisRUWiZHU-4SJPZd699tyZ-PxVbfCueD8s_oY0l6f11zfwq6XFIdZXCng/exec';
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = {
+      "Full Name": document.getElementById('name').value.trim(),
+      "Department": document.getElementById('dept').value,
+      "Semester": document.getElementById('sem').value,
+      "Mobile Number": document.getElementById('mobile').value.trim(),
+      "Gender": document.querySelector('input[name="gender"]:checked') ? document.querySelector('input[name="gender"]:checked').value : ""
+    };
+
+    // ഫോം വാലിഡേഷൻ
+    if (!formData["Full Name"] || !formData.Department || !formData.Semester || !formData["Mobile Number"] || !formData.Gender) {
+      alert("ദയവായി എല്ലാ വിവരങ്ങളും പൂരിപ്പിക്കുക.");
+      return;
+    }
+
+    // Google Apps Script-ലേക്ക് ഡാറ്റ അയക്കുന്നു
+    fetch(scriptURL, {
+      method: 'POST',
+      mode: 'no-cors', // Google Script-ലേക്ക് ഡാറ്റ അയക്കാൻ ഇത് സഹായിക്കും
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    })
+    .then(() => {
+      // ഡാറ്റ സബ്മിറ്റ് ആയി കഴിഞ്ഞാൽ
+      successName.textContent = formData["Full Name"].split(' ')[0];
+      overlay.classList.add('visible');
+    })
+    .catch(error => {
+      console.error('Error!', error);
+      alert("എന്തോ പിശക് സംഭവിച്ചു, വീണ്ടും ശ്രമിക്കുക.");
+    });
+  });
+</script>
+</body>
+</html>
