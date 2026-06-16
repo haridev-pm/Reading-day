@@ -26,12 +26,14 @@
     background-color: var(--ink);
     color: var(--ink);
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
   }
 
   /* ── Bookshelf background ── */
   .page-wrap {
     min-height: 100vh;
+    min-height: 100dvh;
     background:
       repeating-linear-gradient(
         90deg,
@@ -415,9 +417,82 @@
   @keyframes pop { from { transform: scale(0.4); opacity: 0 } to { transform: scale(1); opacity: 1 } }
 
   /* Responsive */
-  @media (max-width: 520px) {
-    .card-header, .card-body, .card-footer { padding-left: 24px; padding-right: 24px; }
-    .row-2 { grid-template-columns: 1fr; }
+  @media (max-width: 768px) {
+
+    .page-wrap {
+      padding: 20px 12px;
+      align-items: flex-start;
+    }
+
+    .page-wrap::before,
+    .page-wrap::after {
+      display: none;
+    }
+
+    .card {
+      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 12px;
+    }
+
+    .card-header,
+    .card-body,
+    .card-footer {
+      padding: 24px 20px;
+    }
+
+    .row-2 {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .field-group {
+      margin-bottom: 18px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    select {
+      font-size: 16px;
+      padding: 14px 16px;
+      min-height: 48px;
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .gender-group {
+      flex-direction: column;
+    }
+
+    .gender-opt label {
+      width: 100%;
+      min-height: 48px;
+    }
+
+    .btn-submit {
+      padding: 16px;
+      font-size: 15px;
+    }
+
+    .title {
+      font-size: 30px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+    }
+
+    .success-overlay {
+      padding: 24px;
+    }
+
+    .success-title {
+      font-size: 24px;
+    }
+
+    .success-msg {
+      font-size: 13px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -481,7 +556,7 @@
         </div>
 
         <div class="field-group">
-          <label for="mobile">WhatsApp Number</label>
+          <label for="mobile">Mobile Number</label>
           <input type="tel" id="mobile" name="mobile" placeholder="+91 XXXXX XXXXX" maxlength="15" required pattern="[0-9+\s\-]{7,15}">
         </div>
 
@@ -533,46 +608,38 @@
   const form = document.getElementById('regForm');
   const overlay = document.getElementById('successOverlay');
   const successName = document.getElementById('successName');
-  
-  // നിങ്ങളുടെ Google Apps Script-ന്റെ URL ഇവിടെയുണ്ട്
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwKDNAJ1KuisRUWiZHU-4SJPZd699tyZ-PxVbfCueD8s_oY0l6f11zfwq6XFIdZXCng/exec';
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    const formData = {
-      "Full Name": document.getElementById('name').value.trim(),
-      "Department": document.getElementById('dept').value,
-      "Semester": document.getElementById('sem').value,
-      "Mobile Number": document.getElementById('mobile').value.trim(),
-      "Gender": document.querySelector('input[name="gender"]:checked') ? document.querySelector('input[name="gender"]:checked').value : ""
-    };
+    const name   = document.getElementById('name').value.trim();
+    const dept   = document.getElementById('dept').value;
+    const sem    = document.getElementById('sem').value;
+    const mobile = document.getElementById('mobile').value.trim();
+    const gender = document.querySelector('input[name="gender"]:checked');
 
-    // ഫോം വാലിഡേഷൻ
-    if (!formData["Full Name"] || !formData.Department || !formData.Semester || !formData["Mobile Number"] || !formData.Gender) {
-      alert("ദയവായി എല്ലാ വിവരങ്ങളും പൂരിപ്പിക്കുക.");
+    if (!name || !dept || !sem || !mobile || !gender) {
+      // Highlight empty fields
+      [document.getElementById('name'), document.getElementById('dept'),
+       document.getElementById('sem'), document.getElementById('mobile')].forEach(el => {
+        if (!el.value.trim()) {
+          el.style.borderColor = '#c0392b';
+          el.addEventListener('input', () => el.style.borderColor = '', { once: true });
+          el.addEventListener('change', () => el.style.borderColor = '', { once: true });
+        }
+      });
+      if (!gender) {
+        document.querySelectorAll('.gender-opt label').forEach(l => {
+          l.style.borderColor = '#c0392b';
+          setTimeout(() => l.style.borderColor = '', 2000);
+        });
+      }
       return;
     }
 
-    // Google Apps Script-ലേക്ക് ഡാറ്റ അയക്കുന്നു
-    fetch(scriptURL, {
-      method: 'POST',
-      mode: 'no-cors', // Google Script-ലേക്ക് ഡാറ്റ അയക്കാൻ ഇത് സഹായിക്കും
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData)
-    })
-    .then(() => {
-      // ഡാറ്റ സബ്മിറ്റ് ആയി കഴിഞ്ഞാൽ
-      successName.textContent = formData["Full Name"].split(' ')[0];
-      overlay.classList.add('visible');
-    })
-    .catch(error => {
-      console.error('Error!', error);
-      alert("എന്തോ പിശക് സംഭവിച്ചു, വീണ്ടും ശ്രമിക്കുക.");
-    });
+    // Show success
+    successName.textContent = name.split(' ')[0];
+    overlay.classList.add('visible');
   });
 </script>
 </body>
